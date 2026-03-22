@@ -1,19 +1,29 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from app.auth.router import router as auth_router
 import os
 
+app = FastAPI(title="LogSentinel AI", version="1.0.0")
 
-app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",       # Vite dev server
+        "http://localhost:4173",       # Vite preview
+        os.getenv("FRONTEND_URL", ""), # Firebase URL in production
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # directory of main.py
-templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
-@app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "title": "Welcome to ProjectX"})
+app.include_router(auth_router)
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8080))
     uvicorn.run("app.main:app", host="0.0.0.0", port=port)
-
