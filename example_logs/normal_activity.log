@@ -1,0 +1,37 @@
+2024-11-22 08:00:01 sshd[1001]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 08:00:05 sshd[1001]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 08:02:33 sshd[1002]: Accepted password for mrodriguez from 10.0.0.14 port 22
+2024-11-22 08:02:37 sshd[1002]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 08:05:11 sshd[1003]: Accepted password for jsmith from 10.0.0.11 port 22
+2024-11-22 08:05:14 sshd[1003]: pam_unix(sshd:session): session opened for user jsmith
+2024-11-22 08:10:01 sudo[1004]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/usr/bin/apt update
+2024-11-22 08:10:45 sudo[1005]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/usr/bin/apt upgrade -y
+2024-11-22 08:15:22 sshd[1006]: Accepted password for devops from 10.0.1.20 port 22
+2024-11-22 08:15:25 sshd[1006]: pam_unix(sshd:session): session opened for user devops
+2024-11-22 08:20:01 sudo[1007]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/systemctl restart nginx
+2024-11-22 08:20:15 sudo[1008]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/systemctl status nginx
+2024-11-22 09:00:11 sshd[1010]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 09:00:14 sshd[1010]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 09:30:00 sudo[1011]: mrodriguez : TTY=pts/1 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/tail -f /var/log/syslog
+2024-11-22 10:00:22 sshd[1012]: Accepted password for jsmith from 10.0.0.11 port 22
+2024-11-22 10:00:25 sshd[1012]: pam_unix(sshd:session): session opened for user jsmith
+2024-11-22 10:15:01 sudo[1013]: jsmith : TTY=pts/0 ; PWD=/home/jsmith ; USER=root ; COMMAND=/usr/bin/df -h
+2024-11-22 10:15:03 sudo[1014]: jsmith : TTY=pts/0 ; PWD=/home/jsmith ; USER=root ; COMMAND=/usr/bin/free -m
+2024-11-22 11:00:00 sudo[1015]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/systemctl restart postgresql
+2024-11-22 11:00:15 sudo[1016]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/systemctl status postgresql
+2024-11-22 12:00:01 sshd[1020]: Received disconnect from 10.0.0.12 port 22
+2024-11-22 12:00:03 sshd[1021]: Received disconnect from 10.0.0.14 port 22
+2024-11-22 13:00:11 sshd[1022]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 13:00:14 sshd[1022]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 13:30:44 sudo[1023]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/usr/bin/apt install vim -y
+2024-11-22 14:00:22 sshd[1024]: Accepted password for mrodriguez from 10.0.0.14 port 22
+2024-11-22 14:00:25 sshd[1024]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 14:30:01 sudo[1025]: mrodriguez : TTY=pts/1 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/tail -f /var/log/nginx/access.log
+2024-11-22 15:00:00 sudo[1026]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/usr/bin/rsync -av /var/backups/ 10.0.1.50:/backups/
+2024-11-22 15:30:11 sshd[1027]: Accepted password for jsmith from 10.0.0.11 port 22
+2024-11-22 15:30:14 sshd[1027]: pam_unix(sshd:session): session opened for user jsmith
+2024-11-22 16:00:01 sudo[1028]: jsmith : TTY=pts/0 ; PWD=/home/jsmith ; USER=root ; COMMAND=/usr/bin/top
+2024-11-22 17:00:00 sshd[1030]: Received disconnect from 10.0.0.11 port 22
+2024-11-22 17:15:22 sshd[1031]: Received disconnect from 10.0.1.20 port 22
+2024-11-22 17:30:01 sshd[1032]: Received disconnect from 10.0.0.12 port 22
+2024-11-22 17:45:11 sshd[1033]: Received disconnect from 10.0.0.14 port 22
