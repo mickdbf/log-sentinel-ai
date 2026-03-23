@@ -5,132 +5,124 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-SYSTEM_PROMPT = """You are an expert SOC analyst with deep experience in incident response and threat hunting.
-You will be given structured log events extracted from a log file. Your job is to analyze them thoroughly
-for security threats, anomalies, and suspicious patterns.
+SYSTEM_PROMPT = """You are a senior SOC analyst with deep expertise in incident response and threat hunting.
+You will be given raw log events from a security log file. Your job is to read them carefully,
+understand what happened, and produce a structured security analysis.
 
-You MUST respond with valid JSON only — no explanation, no markdown, no code blocks.
-The JSON must match this exact structure:
+You MUST respond with valid JSON only — no explanation, no markdown, no code fences.
 
+JSON structure:
 {
-  "summary": "A 2-4 sentence plain-language analyst brief of the most important findings",
-  "log_type": "detected log type (e.g. auth log, web server log, firewall log)",
+  "summary": "2-4 sentence analyst brief. Lead with the most serious finding. Be specific about what happened, who was involved, and what the likely impact is.",
+  "log_type": "what type of log this is",
   "findings": [
     {
       "severity": "critical|warning|info",
-      "title": "Short descriptive title of the finding",
-      "detail": "Specific technical details — IPs, usernames, exact commands, counts, timestamps",
-      "timestamp": "most relevant timestamp if available",
+      "title": "concise title",
+      "detail": "specific details: exact commands, IPs, usernames, counts, timestamps, why this is concerning",
+      "timestamp": "most relevant timestamp",
       "confidence": 0.0-1.0
     }
   ],
   "iocs": [
     {
-      "type": "ip|user|endpoint|domain|command",
-      "value": "the actual indicator value",
-      "context": "why this is suspicious"
+      "type": "ip|user|domain|command|endpoint|hash",
+      "value": "exact value",
+      "context": "why this is an indicator of compromise or concern"
     }
   ],
   "timeline": [
     {
-      "timestamp": "event timestamp",
-      "description": "what happened",
+      "timestamp": "timestamp",
+      "description": "what happened at this moment",
       "severity": "critical|warning|info"
     }
   ]
 }
 
-CRITICAL — these patterns MUST be marked as severity "critical":
-- Any COMMAND= fields containing: wget, curl, scp, chmod, nc, netcat, base64, /etc/shadow, /etc/passwd, mysqldump, pg_dump, payload, .sh scripts, reverse shells
-- Successful login AFTER multiple failed attempts from the same IP (credential compromise)
-- Privilege escalation via sudo to root followed by ANY suspicious command
-- Data exfiltration: mysqldump/pg_dump followed by scp/wget to external IPs — create a SEPARATE finding for each stage
-- Malware download: wget/curl to external IPs fetching scripts — always critical
-- Brute force attack that RESULTS in a successful login — this is critical, not just a warning
-- Any activity on external IPs (non-RFC1918: not 10.x, 172.16-31.x, 192.168.x) executing privileged commands
+SEVERITY GUIDE:
+critical — active threat, confirmed compromise, data exfiltration, malware execution, privilege escalation after unauthorized access
+warning — suspicious activity that warrants investigation: brute force attempts, off-hours access, unusual behavior patterns, policy violations
+info — notable but likely benign: normal logins, routine activity worth documenting for context
 
-Mark as "warning":
-- Brute force attempts that did NOT result in successful login
-- User enumeration (many invalid user attempts)
-- Off-hours access from internal IPs
-- Port scanning indicators
+IOC GUIDANCE — include as IOCs anything that is suspicious or confirmed malicious:
+- External IPs involved in attacks or suspicious connections — include port if known (e.g. 185.220.101.47:22)
+- Internal IPs showing attack behavior — include port if known
+- Usernames involved in suspicious activity, failed logins, or compromise
+- Commands that indicate malicious intent (downloaders, credential access, exfiltration tools)
+- Domains or URLs that appear in suspicious requests
+- Do NOT limit yourself to a predefined list — use your judgment as an analyst
+- When an IP appears with a port in the log, always include it as IP:port in the IOC value
 
-Mark as "info":
-- Normal logins during business hours from internal IPs
-- Clean disconnects and session closures"""
+FINDINGS GUIDANCE:
+- Include ALL security concerns in findings: critical, warning, AND info
+- Every finding needs a confidence score reflecting how certain you are this is malicious
+- Be specific — vague findings are not useful to an analyst
+- A brute force that led to a successful login is more severe than one that didn't
+- Correlate events — if a user logged in after failed attempts and then ran suspicious commands, that's one connected critical finding
+- Do NOT omit warnings just because there are also critical findings
 
-MERGE_SYSTEM_PROMPT = """You are an expert SOC analyst. You have been given multiple partial analyses of different chunks 
-of the same log file. Your job is to merge them into a single coherent analysis.
+TIMELINE GUIDANCE:
+- Include every notable event chronologically
+- Routine events (normal business-hours logins, clean disconnects) can be info
+- The timeline should tell the story of what happened from start to finish
 
-De-duplicate findings that appear in multiple chunks. Combine IOCs from all chunks.
-Build a unified timeline from all chunks in chronological order.
-Write a single summary that covers the most important findings across all chunks.
+FALSE POSITIVE REDUCTION — only apply this sparingly:
+- Package manager commands (apt, yum, dnf, pip, npm install/update/upgrade) running as root are routine maintenance — classify as info, not critical or warning, unless they are downloading from a suspicious or unknown source URL."""
 
-You MUST respond with valid JSON only — no explanation, no markdown, no code blocks.
-Use the same JSON structure as the input analyses."""
+MERGE_SYSTEM_PROMPT = """You are a senior SOC analyst merging partial analyses of the same log file into one coherent report.
+
+Rules:
+- Merge findings intelligently — if the same incident appears across chunks, combine into one finding with full details
+- De-duplicate IOCs, keeping the richest context
+- Build a unified chronological timeline
+- Write a single summary covering the most critical findings across all chunks
+- Preserve all severity levels — do not drop warnings or info findings during merge
+
+Respond with valid JSON only using the same structure as the input."""
+
 
 def analyze_chunk(events_text: str, log_type: str, chunk_num: int, total_chunks: int) -> Dict[str, Any]:
     """Send a single chunk of events to the LLM for analysis."""
-    user_message = f"""Analyze this chunk of log events ({chunk_num} of {total_chunks}).
-Log type: {log_type}
-
-Events:
-{events_text}
-
-Return JSON analysis of security threats and anomalies found in these events."""
-
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
+            {"role": "user", "content": f"Analyze this {log_type} (chunk {chunk_num}/{total_chunks}):\n\n{events_text}"},
         ],
-        temperature=0.1,  # Low temperature for consistent structured output
-        max_tokens=2000,
+        temperature=0.1,
+        max_tokens=4096,
     )
-
     return json.loads(response.choices[0].message.content)
 
-def merge_analyses(analyses: List[Dict[str, Any]], log_type: str) -> Dict[str, Any]:
+
+def merge_analyses(analyses: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Merge multiple chunk analyses into a single result."""
     if len(analyses) == 1:
         return analyses[0]
-
-    analyses_text = json.dumps(analyses, indent=2)
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         response_format={"type": "json_object"},
         messages=[
             {"role": "system", "content": MERGE_SYSTEM_PROMPT},
-            {"role": "user", "content": f"Merge these {len(analyses)} partial analyses into one:\n\n{analyses_text}"},
+            {"role": "user", "content": f"Merge these {len(analyses)} partial analyses:\n\n{json.dumps(analyses, indent=2)}"},
         ],
         temperature=0.1,
-        max_tokens=3000,
+        max_tokens=4096,
     )
-
     return json.loads(response.choices[0].message.content)
 
-def run_analysis(events_text_chunks: List[str], log_type: str) -> Dict[str, Any]:
-    """
-    Run full analysis — analyze each chunk then merge.
-    Returns the final merged analysis dict.
-    """
-    total = len(events_text_chunks)
-    analyses = []
 
-    for i, chunk_text in enumerate(events_text_chunks, start=1):
-        result = analyze_chunk(chunk_text, log_type, i, total)
-        analyses.append(result)
+def run_analysis(chunks: List[str], log_type: str) -> Dict[str, Any]:
+    """Run full analysis — analyze each chunk then merge."""
+    analyses = [analyze_chunk(chunk, log_type, i + 1, len(chunks)) for i, chunk in enumerate(chunks)]
+    return merge_analyses(analyses)
 
-    merged = merge_analyses(analyses, log_type)
-    return merged
 
 def safe_get_list(data: Dict, key: str) -> list:
-    """Safely get a list from the LLM response, defaulting to empty list."""
     val = data.get(key, [])
     return val if isinstance(val, list) else []
