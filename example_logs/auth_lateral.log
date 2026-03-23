@@ -1,0 +1,31 @@
+2024-11-22 07:58:01 sshd[2001]: Accepted password for devops from 10.0.1.20 port 22
+2024-11-22 07:58:05 sshd[2001]: pam_unix(sshd:session): session opened for user devops
+2024-11-22 08:02:11 sshd[2002]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 08:02:15 sshd[2002]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 08:15:33 sshd[2003]: Accepted password for mrodriguez from 10.0.0.14 port 22
+2024-11-22 08:15:37 sshd[2003]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 11:30:01 sshd[2004]: Failed password for root from 185.234.219.4 port 22
+2024-11-22 11:30:03 sshd[2004]: Failed password for root from 185.234.219.4 port 22
+2024-11-22 11:30:05 sshd[2004]: Failed password for root from 185.234.219.4 port 22
+2024-11-22 11:30:07 sshd[2004]: Failed password for admin from 185.234.219.4 port 22
+2024-11-22 11:30:09 sshd[2004]: Failed password for admin from 185.234.219.4 port 22
+2024-11-22 11:30:11 sshd[2004]: Failed password for ubuntu from 185.234.219.4 port 22
+2024-11-22 11:30:13 sshd[2004]: Failed password for ubuntu from 185.234.219.4 port 22
+2024-11-22 11:30:15 sshd[2004]: Failed password for devops from 185.234.219.4 port 22
+2024-11-22 11:30:17 sshd[2004]: Failed password for devops from 185.234.219.4 port 22
+2024-11-22 11:30:19 sshd[2004]: Accepted password for devops from 185.234.219.4 port 22
+2024-11-22 11:30:21 sshd[2004]: pam_unix(sshd:session): session opened for user devops
+2024-11-22 11:30:45 sudo[2005]: devops : TTY=pts/0 ; PWD=/home/devops ; USER=root ; COMMAND=/bin/bash
+2024-11-22 11:31:02 sudo[2006]: devops : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/cat /etc/passwd
+2024-11-22 11:31:15 sudo[2007]: devops : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/cat /etc/shadow
+2024-11-22 11:31:44 sudo[2008]: devops : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/ssh-keygen -t rsa -f /root/.ssh/backdoor_key
+2024-11-22 11:32:01 sudo[2009]: devops : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/bin/bash -c "echo 'ssh-rsa AAAAB3NzaC1yc2EAAAA backdoor' >> /root/.ssh/authorized_keys"
+2024-11-22 11:32:30 sshd[2010]: Accepted publickey for root from 185.234.219.4 port 22
+2024-11-22 11:32:33 sshd[2010]: pam_unix(sshd:session): session opened for user root
+2024-11-22 11:33:01 sudo[2011]: root : TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/useradd -m -s /bin/bash svcaccount
+2024-11-22 11:33:15 sudo[2012]: root : TTY=pts/1 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/usermod -aG sudo svcaccount
+2024-11-22 11:34:00 sshd[2020]: Received disconnect from 185.234.219.4 port 22
+2024-11-22 14:22:01 sshd[3001]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 14:22:05 sshd[3001]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 17:45:00 sshd[3002]: Received disconnect from 10.0.0.12 port 22
+2024-11-22 17:50:11 sshd[3003]: Received disconnect from 10.0.1.20 port 22

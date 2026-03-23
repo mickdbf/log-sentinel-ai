@@ -1,0 +1,36 @@
+2024-11-22 09:00:01 INFO  [App] Application started successfully on port 8080
+2024-11-22 09:00:15 INFO  [DB] Database connection established to prod-db-01
+2024-11-22 09:15:33 INFO  [Auth] User jdoe authenticated successfully from 10.0.0.12
+2024-11-22 09:16:01 INFO  [API] GET /api/v1/users 200 45ms user=jdoe
+2024-11-22 09:30:22 WARN  [Auth] Failed login attempt for user admin from 203.0.113.9
+2024-11-22 09:30:24 WARN  [Auth] Failed login attempt for user admin from 203.0.113.9
+2024-11-22 09:30:26 WARN  [Auth] Failed login attempt for user admin from 203.0.113.9
+2024-11-22 09:30:28 WARN  [Auth] Failed login attempt for user admin from 203.0.113.9
+2024-11-22 09:30:30 WARN  [Auth] Failed login attempt for user admin from 203.0.113.9
+2024-11-22 09:30:32 WARN  [Auth] Account admin temporarily locked after 5 failed attempts from 203.0.113.9
+2024-11-22 09:45:01 INFO  [Auth] User mrodriguez authenticated successfully from 10.0.0.14
+2024-11-22 10:00:15 ERROR [DB] Query timeout on table users after 30000ms - query: SELECT * FROM users WHERE id=1337
+2024-11-22 10:00:16 ERROR [DB] Query timeout on table users after 30000ms - query: SELECT * FROM users WHERE id=1338
+2024-11-22 10:00:44 ERROR [API] Unhandled exception in /api/v1/admin/export - java.lang.NullPointerException at AdminController.java:142
+2024-11-22 10:01:02 WARN  [Security] SQL injection attempt detected in parameter 'id': value="1 OR 1=1--" from IP 203.0.113.9
+2024-11-22 10:01:04 WARN  [Security] SQL injection attempt detected in parameter 'id': value="' UNION SELECT * FROM users--" from IP 203.0.113.9
+2024-11-22 10:01:06 WARN  [Security] SQL injection attempt detected in parameter 'id': value="1; DROP TABLE users--" from IP 203.0.113.9
+2024-11-22 10:01:08 ERROR [Security] IP 203.0.113.9 blocked after repeated injection attempts
+2024-11-22 10:15:33 INFO  [Auth] User jsmith authenticated successfully from 10.0.0.11
+2024-11-22 10:16:01 INFO  [API] GET /api/v1/reports 200 123ms user=jsmith
+2024-11-22 11:00:22 INFO  [Auth] User jdoe authenticated successfully from 10.0.0.12
+2024-11-22 11:30:01 ERROR [App] Out of memory error - heap space exhausted, attempting GC
+2024-11-22 11:30:02 ERROR [App] GC overhead limit exceeded - application may be unstable
+2024-11-22 11:30:15 WARN  [App] Memory pressure detected - clearing caches
+2024-11-22 12:00:00 INFO  [App] Scheduled maintenance task started
+2024-11-22 12:00:15 INFO  [DB] Database backup initiated
+2024-11-22 14:00:01 INFO  [Auth] User mrodriguez authenticated successfully from 10.0.0.14
+2024-11-22 14:00:44 INFO  [API] POST /api/v1/reports/export 200 3421ms user=mrodriguez
+2024-11-22 14:30:22 WARN  [Auth] Password reset requested for user admin from IP 203.0.113.9
+2024-11-22 14:30:45 WARN  [Auth] Password reset link sent to admin@company.com requested from IP 203.0.113.9
+2024-11-22 15:00:01 INFO  [Auth] Password changed for user admin from IP 203.0.113.9
+2024-11-22 15:00:15 INFO  [Auth] User admin authenticated successfully from 203.0.113.9
+2024-11-22 15:01:02 INFO  [API] GET /api/v1/admin/users 200 234ms user=admin
+2024-11-22 15:01:15 INFO  [API] GET /api/v1/admin/config 200 89ms user=admin
+2024-11-22 15:02:01 INFO  [API] POST /api/v1/admin/users/export 200 8921ms user=admin
+2024-11-22 15:02:44 INFO  [API] DELETE /api/v1/audit-logs 200 1204ms user=admin
