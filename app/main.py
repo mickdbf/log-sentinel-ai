@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.auth.router import router as auth_router
+from app.analysis.router import router as analysis_router
 import os
 
 app = FastAPI(title="LogSentinel AI", version="1.0.0")
@@ -8,9 +9,9 @@ app = FastAPI(title="LogSentinel AI", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",       # Vite dev server
-        "http://localhost:4173",       # Vite preview
-        os.getenv("FRONTEND_URL", ""), # Firebase URL in production
+        "http://localhost:5173",
+        "http://localhost:4173",
+        os.getenv("FRONTEND_URL", ""),
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(analysis_router)
 
 @app.get("/health")
 def health():
