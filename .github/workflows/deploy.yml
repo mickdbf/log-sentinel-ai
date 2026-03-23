@@ -52,7 +52,8 @@ jobs:
             --region=${{ env.REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --set-env-vars="DB_HOST=${{ secrets.DB_HOST }},DB_PORT=${{ secrets.DB_PORT }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},SECRET_KEY=${{ secrets.SECRET_KEY }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},FRONTEND_URL=${{ secrets.FRONTEND_URL }}"
+            --add-cloudsql-instances=log-sentinel-ai-491001:us-west1:log-sentinel-db \
+            --set-env-vars="DB_HOST=/cloudsql/log-sentinel-ai-491001:us-west1:log-sentinel-db,DB_PORT=${{ secrets.DB_PORT }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},SECRET_KEY=${{ secrets.SECRET_KEY }},OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }},FRONTEND_URL=${{ secrets.FRONTEND_URL }}"
 
   deploy-frontend:
     name: Build and deploy frontend to Firebase
