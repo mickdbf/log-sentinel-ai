@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import type { ReactElement } from "react";
 
 interface DashboardProps { token: string; }
 
@@ -51,7 +52,7 @@ interface PastAnalysis {
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-const NAV_ITEMS: { id: SidebarView; label: string; icon: JSX.Element }[] = [
+const NAV_ITEMS: { id: SidebarView; label: string; icon: ReactElement }[] = [
   { id: "summary",  label: "Threat summary",  icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg> },
   { id: "timeline", label: "Event timeline",  icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M7 4v3l2 2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
   { id: "iocs",     label: "IOCs",        icon: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="5" cy="5" r="3" stroke="currentColor" strokeWidth="1.2" fill="none"/><path d="M7.5 7.5L12 12" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg> },
@@ -226,7 +227,7 @@ export default function Dashboard({ token }: DashboardProps) {
             </div>
             {result && view !== "history" && (
               <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <span style={{ fontSize: "11px", color: "#4d5f75" }}>Detected log type:</span>
+                <span style={{ fontSize: "11px", color: "#4d5f75" }}>Detected type:</span>
                 <div style={s.fileChip}>{result.log_type}</div>
               </div>
             )}
@@ -242,7 +243,7 @@ export default function Dashboard({ token }: DashboardProps) {
 }
 
 /* ── Upload state ── */
-function UploadState({ dragging, setDragging, onDrop, fileRef, handleFile, error }: any) {
+function UploadState({ dragging, setDragging, onDrop, fileRef, error }: any) {
   return (
     <div style={uv.wrap}>
       <div className="upload-zone" style={{ ...uv.zone, ...(dragging ? uv.zoneDrag : {}) }}
@@ -330,31 +331,7 @@ function SummaryView({ result }: { result: AnalysisResult }) {
   );
 }
 
-/* ── All findings view ── */
-function FindingsView({ findings }: { findings: Finding[] }) {
-  const [filter, setFilter] = useState<string>("all");
-  const filtered = filter === "all" ? findings : findings.filter(f => f.severity === filter);
-
-  return (
-    <div style={sv.wrap}>
-      <div style={sv.sectionRow}>
-        <span style={sv.sectionTitle}>All findings</span>
-        <div style={{ display: "flex", gap: "6px" }}>
-          {["all", "critical", "warning", "info"].map(f => (
-            <button key={f} onClick={() => setFilter(f)}
-              style={{ ...fv.filterBtn, ...(filter === f ? fv.filterBtnActive : {}) }}>
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
-      {filtered.length === 0
-        ? <EmptyState message="No findings match this filter." />
-        : filtered.map((f, i) => <FindingRow key={i} finding={f} />)
-      }
-    </div>
-  );
-}
+/* ── Finding row ── */
 
 function FindingRow({ finding }: { finding: Finding }) {
   const [expanded, setExpanded] = useState(false);
