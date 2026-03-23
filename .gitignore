@@ -6,6 +6,7 @@ __pycache__/
 .venv/
 venv/
 .env
+.vite/
 
 # IDE/editor configs
 *.pyc
