@@ -15,8 +15,8 @@ IP_PATTERN = r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
 def detect_log_type(lines: List[str]) -> str:
     """Best-effort log type detection — just a hint for the LLM."""
     sample = " ".join(lines[:30]).lower()
-    if any(k in sample for k in ["apache", "nginx", "http/1", "http/2", "get /", "post /"]):
-        return "web server log"
+    if any(k in sample for k in ["zscaler", "zscalernss", "action=allowed", "action=blocked", "bytes_sent", "bytes_received", "cat=", "policy="]):
+        return "ZScaler web proxy log"
     if any(k in sample for k in ["failed password", "accepted password", "invalid user", "pam_unix", "sshd"]):
         return "auth log"
     if any(k in sample for k in ["firewall", "src=", "dst=", "inbound", "outbound", "allow", "deny"]):

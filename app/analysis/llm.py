@@ -43,7 +43,7 @@ JSON structure:
 }
 
 SEVERITY GUIDE:
-critical — active threat, confirmed compromise, data exfiltration, malware execution, privilege escalation after unauthorized access
+critical — active threat, confirmed compromise, data exfiltration, malware execution, persistence mechanisms, covering tracks, or privilege escalation following unauthorized access
 warning — suspicious activity that warrants investigation: brute force attempts, off-hours access, unusual behavior patterns, policy violations
 info — notable but likely benign: normal logins, routine activity worth documenting for context
 

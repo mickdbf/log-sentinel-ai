@@ -79,9 +79,12 @@ function SevBadge({ sev }: { sev: string }) {
 function ConfidencePill({ value }: { value: number }) {
   const color = value >= 0.85 ? "#f85149" : value >= 0.7 ? "#e3b341" : "#58a6ff";
   return (
-    <span style={{ fontSize: "10px", fontWeight: 600, color, fontFamily: "'IBM Plex Mono', monospace" }}>
-      {value.toFixed(2)}
-    </span>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "1px" }}>
+      <span style={{ fontSize: "9px", color: "#4d5f75", letterSpacing: "0.05em", textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace" }}>confidence</span>
+      <span style={{ fontSize: "12px", fontWeight: 600, color, fontFamily: "'IBM Plex Mono', monospace" }}>
+        {value.toFixed(2)}
+      </span>
+    </div>
   );
 }
 
@@ -221,7 +224,12 @@ export default function Dashboard({ token }: DashboardProps) {
                 <div style={s.topbarMeta}>{result.filename} · {result.events_parsed.toLocaleString()} events · {result.analysis_time}s</div>
               )}
             </div>
-            {result && view !== "history" && <div style={s.fileChip}>{result.log_type}</div>}
+            {result && view !== "history" && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <span style={{ fontSize: "11px", color: "#4d5f75" }}>Detected log type:</span>
+                <div style={s.fileChip}>{result.log_type}</div>
+              </div>
+            )}
           </div>
         )}
         <div style={s.mainBody}>{renderMain()}</div>
