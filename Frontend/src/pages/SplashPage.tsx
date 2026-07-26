@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useIsMobile, useIsTablet } from "../hooks/useMediaQuery";
 
 interface SplashPageProps {
   token: string | null;
@@ -45,6 +46,7 @@ const STATS = [
 
 function DashboardPreview() {
   const [activeView, setActiveView] = useState<"summary" | "timeline" | "iocs">("summary");
+  const isMobile = useIsMobile();
 
   const views = [
     { id: "summary" as const, label: "Threat summary" },
@@ -53,8 +55,8 @@ function DashboardPreview() {
   ];
 
   return (
-    <div style={p.card}>
-      <div style={p.sidebar}>
+    <div style={{ ...p.card, ...(isMobile ? p.cardMobile : {}) }}>
+      <div style={{ ...p.sidebar, ...(isMobile ? p.sidebarMobile : {}) }}>
         <div style={p.sbLogo}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" stroke="#58a6ff" strokeWidth="1.2" fill="none"/>
@@ -94,7 +96,7 @@ function DashboardPreview() {
 
         {activeView === "summary" && (
           <>
-            <div style={p.kpiRow}>
+            <div style={{ ...p.kpiRow, ...(isMobile ? p.kpiRowMobile : {}) }}>
               {[
                 { n: "3", color: "#f85149", label: "Critical" },
                 { n: "2", color: "#e3b341", label: "Warnings" },
@@ -202,6 +204,8 @@ function DashboardPreview() {
 
 export default function SplashPage({ token, onEnterDashboard, onGetStarted }: SplashPageProps) {
   const [visible, setVisible] = useState(false);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   useEffect(() => { const t = setTimeout(() => setVisible(true), 80); return () => clearTimeout(t); }, []);
 
   return (
@@ -214,7 +218,7 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
       <div style={s.bgGrid} />
 
       <section style={{ ...s.hero, opacity: visible ? 1 : 0, transform: visible ? "none" : "translateY(12px)", transition: "all 0.45s ease" }}>
-        <div style={s.heroInner}>
+        <div style={{ ...s.heroInner, ...(isTablet ? s.heroInnerTablet : {}) }}>
           <div style={s.heroLeft}>
             <div style={s.heroLabel}>
               <span style={s.heroLabelLine} />
@@ -227,7 +231,7 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
             <p style={s.heroSub}>
               LogSentinel parses text-based log files, extracts structured events, and uses AI to surface anomalies, suspicious patterns, and key indicators — turning hours of manual log review into minutes.
             </p>
-            <div style={s.ctaRow}>
+            <div style={{ ...s.ctaRow, ...(isMobile ? s.ctaRowMobile : {}) }}>
               {token ? (
                 <button style={s.btnPrimary} onClick={onEnterDashboard}>
                   Open Dashboard
@@ -243,7 +247,7 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
             </div>
           </div>
 
-          <div style={s.heroRight}>
+          <div style={{ ...s.heroRight, ...(isTablet ? s.heroRightTablet : {}) }}>
             <div style={s.gridCard}>
               <div style={s.gridHeader}>
                 <span style={s.gridHeaderTitle}>
@@ -255,7 +259,7 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
                 </span>
                 <span style={s.gridHeaderSub}>per analysis run</span>
               </div>
-              <div style={s.tileGrid}>
+              <div style={{ ...s.tileGrid, ...(isMobile ? s.tileGridMobile : {}) }}>
                 {[
                   { tag: "Critical", tagColor: "#f85149", title: "Attack patterns", desc: "Brute force, credential stuffing, privilege escalation, malware execution — identified by behavior and context." },
                   { tag: "Warning", tagColor: "#e3b341", title: "Behavioral anomalies", desc: "Off-hours access, unusual user behavior, policy violations, and deviations from normal patterns." },
@@ -279,43 +283,43 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
         </div>
       </section>
 
-      <div style={s.statsBar}>
+      <div style={{ ...s.statsBar, ...(isMobile ? s.statsBarMobile : {}) }}>
         {STATS.map((stat, i) => (
-          <div key={stat.label} style={{ ...s.stat, ...(i < STATS.length - 1 ? s.statBorder : {}) }}>
+          <div key={stat.label} style={{ ...s.stat, ...(isMobile ? s.statMobile : {}), ...(!isMobile && i < STATS.length - 1 ? s.statBorder : {}) }}>
             <div style={s.statVal}>{stat.val}</div>
             <div style={s.statLabel}>{stat.label}</div>
           </div>
         ))}
       </div>
 
-      <section style={s.previewSection}>
+      <section style={{ ...s.previewSection, ...(isTablet ? s.previewSectionTablet : {}) }}>
         <div style={s.previewLabel}>// analyst dashboard — live analysis view</div>
         <DashboardPreview />
       </section>
 
-      <section style={s.section}>
+      <section style={{ ...s.section, ...(isTablet ? s.sectionTablet : {}) }}>
         <div style={s.sectionEyebrow}>How it works</div>
         <h2 style={s.sectionH2}>From raw log to ranked findings.</h2>
-        <div style={s.stepsRow}>
+        <div style={{ ...s.stepsRow, ...(isMobile ? s.stepsRowMobile : {}) }}>
           {STEPS.map((step, i) => (
-            <div key={step.num} style={{ display: "flex", alignItems: "center", flex: i < STEPS.length - 1 ? 1 : "none" }}>
+            <div key={step.num} style={{ display: "flex", alignItems: "center", flex: i < STEPS.length - 1 ? 1 : "none", ...(isMobile ? { flex: "none", width: "100%", flexDirection: "column" } : {}) }}>
               <div style={s.step}>
                 <div style={s.stepNum}>{step.num}</div>
                 <div style={s.stepTitle}>{step.title}</div>
                 <div style={s.stepSub}>{step.sub}</div>
               </div>
-              {i < STEPS.length - 1 && <div style={s.stepArrow}>→</div>}
+              {i < STEPS.length - 1 && <div style={{ ...s.stepArrow, ...(isMobile ? s.stepArrowMobile : {}) }}>{isMobile ? "↓" : "→"}</div>}
             </div>
           ))}
         </div>
       </section>
 
-      <section style={s.sectionAlt}>
-        <div style={s.sectionInner}>
+      <section style={{ ...s.sectionAlt, ...(isTablet ? s.sectionAltTablet : {}) }}>
+        <div style={{ ...s.sectionInner, ...(isTablet ? s.sectionInnerTablet : {}) }}>
           <div style={s.sectionEyebrow}>Capabilities</div>
           <h2 style={s.sectionH2}>Built for analyst efficiency.</h2>
           <p style={s.sectionSub}>Structured parsing, LLM analysis, and a clean findings interface — focused on what matters.</p>
-          <div style={s.featGrid}>
+          <div style={{ ...s.featGrid, ...(isMobile ? s.featGridMobile : isTablet ? s.featGridTablet : {}) }}>
             {FEATURES.map(f => (
               <div key={f.title} style={s.featCard}>
                 <div style={s.featTag}>{f.tag}</div>
@@ -327,8 +331,8 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
         </div>
       </section>
 
-      <section style={s.ctaSection}>
-        <div style={s.ctaInner}>
+      <section style={{ ...s.ctaSection, ...(isTablet ? s.ctaSectionTablet : {}) }}>
+        <div style={{ ...s.ctaInner, ...(isTablet ? s.ctaInnerTablet : {}) }}>
           <div>
             <h2 style={s.ctaH2}>Ready to triage your logs?</h2>
             <p style={s.ctaSub}>Sign in and upload a log file to get a full threat analysis.</p>
@@ -340,7 +344,7 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
         </div>
       </section>
 
-      <footer style={s.footer}>
+      <footer style={{ ...s.footer, ...(isMobile ? s.footerMobile : {}) }}>
         <span style={s.footerText}>LogSentinel AI // SOC tooling</span>
         <span style={s.footerText}>FastAPI · PostgreSQL · Google Cloud · React</span>
       </footer>
@@ -350,7 +354,10 @@ export default function SplashPage({ token, onEnterDashboard, onGetStarted }: Sp
 
 const p: Record<string, React.CSSProperties> = {
   card: { background: "#0a1525", border: "1px solid rgba(56,139,255,0.12)", borderRadius: "12px", overflow: "hidden", display: "grid", gridTemplateColumns: "190px 1fr" },
+  cardMobile: { gridTemplateColumns: "1fr" },
   sidebar: { background: "#07101e", borderRight: "1px solid rgba(255,255,255,0.05)", padding: "18px 12px", display: "flex", flexDirection: "column", gap: "2px" },
+  sidebarMobile: { display: "none" },
+  kpiRowMobile: { gridTemplateColumns: "repeat(2, 1fr)" },
   sbLogo: { display: "flex", alignItems: "center", gap: "8px", padding: "0 8px", marginBottom: "20px" },
   sbLogoName: { fontSize: "13px", fontWeight: 700, color: "#e8edf5" },
   sbLogoBadge: { fontSize: "9px", fontWeight: 600, background: "rgba(56,139,255,0.15)", color: "#58a6ff", border: "1px solid rgba(56,139,255,0.3)", padding: "1px 5px", borderRadius: "3px" },
@@ -358,7 +365,7 @@ const p: Record<string, React.CSSProperties> = {
   sbItem: { fontSize: "12px", padding: "6px 8px", borderRadius: "4px", color: "#4d5f75", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" },
   sbItemActive: { background: "rgba(56,139,255,0.1)", color: "#58a6ff", fontWeight: 500 },
   sbUpload: { marginTop: "auto", fontSize: "12px", fontWeight: 600, color: "#fff", background: "#1a6ef5", border: "none", padding: "8px 12px", borderRadius: "5px", cursor: "pointer", fontFamily: "inherit", textAlign: "center" as const },
-  main: { padding: "18px 22px", display: "flex", flexDirection: "column", gap: "12px" },
+  main: { padding: "18px 22px", display: "flex", flexDirection: "column", gap: "12px", minWidth: 0 },
   mainTop: { display: "flex", alignItems: "center", justifyContent: "space-between" },
   mainTitle: { fontSize: "13px", fontWeight: 600, color: "#e8edf5", marginBottom: "3px" },
   mainMeta: { fontSize: "11px", color: "#4d5f75", fontFamily: "'IBM Plex Mono', monospace" },
@@ -390,14 +397,17 @@ const s: Record<string, React.CSSProperties> = {
   bgGrid: { position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", backgroundImage: "linear-gradient(rgba(56,139,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(56,139,255,0.025) 1px, transparent 1px)", backgroundSize: "48px 48px" },
   hero: { position: "relative", zIndex: 1, paddingTop: "58px" },
   heroInner: { display: "flex", alignItems: "center", gap: "64px", maxWidth: "1600px", margin: "0 auto", padding: "60px 80px 60px" },
+  heroInnerTablet: { flexDirection: "column", alignItems: "stretch", gap: "40px", padding: "40px 20px" },
   heroLeft: { flex: 1 },
   heroRight: { flexShrink: 0, width: "520px" },
+  heroRightTablet: { width: "100%", flexShrink: 1 },
   heroLabel: { display: "flex", alignItems: "center", gap: "10px", fontSize: "11px", fontWeight: 600, color: "#58a6ff", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "24px", fontFamily: "'IBM Plex Mono', monospace" },
   heroLabelLine: { height: "1px", width: "28px", background: "#58a6ff", opacity: 0.4, display: "inline-block" },
   h1: { fontSize: "clamp(44px, 5vw, 72px)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em", color: "#e8edf5", marginBottom: "24px" },
   h1Accent: { color: "#58a6ff" },
   heroSub: { fontSize: "18px", color: "#8b9ab0", lineHeight: 1.75, maxWidth: "620px", marginBottom: "36px" },
   ctaRow: { display: "flex", alignItems: "center", gap: "16px" },
+  ctaRowMobile: { flexWrap: "wrap", gap: "12px" },
   btnPrimary: { display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "15px", fontWeight: 600, color: "#fff", background: "#1a6ef5", border: "none", padding: "14px 28px", borderRadius: "6px", cursor: "pointer", fontFamily: "inherit" },
   heroMeta: { fontSize: "13px", color: "#4d5f75", fontFamily: "'IBM Plex Mono', monospace" },
   gridCard: { background: "#0c1628", border: "1px solid rgba(56,139,255,0.15)", borderRadius: "12px", overflow: "hidden" },
@@ -405,39 +415,53 @@ const s: Record<string, React.CSSProperties> = {
   gridHeaderTitle: { fontSize: "13px", fontWeight: 600, color: "#e8edf5", display: "flex", alignItems: "center", gap: "8px" },
   gridHeaderSub: { fontSize: "11px", color: "#4d5f75", fontFamily: "'IBM Plex Mono', monospace" },
   tileGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "rgba(255,255,255,0.05)" },
+  tileGridMobile: { gridTemplateColumns: "1fr" },
   tile: { background: "#0a1525", padding: "22px 20px", transition: "background 0.15s", cursor: "default" },
   tileWide: { background: "#0a1525", padding: "22px 20px", gridColumn: "1 / -1", borderTop: "1px solid rgba(255,255,255,0.04)", cursor: "default" },
   tileTag: { fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const, fontFamily: "'IBM Plex Mono', monospace", marginBottom: "10px" },
   tileTitle: { fontSize: "14px", fontWeight: 700, color: "#e8edf5", marginBottom: "6px" },
   tileDesc: { fontSize: "12px", color: "#8b9ab0", lineHeight: 1.6 },
   statsBar: { position: "relative", zIndex: 1, display: "flex", width: "100%", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(10,20,37,0.8)" },
+  statsBarMobile: { display: "grid", gridTemplateColumns: "1fr 1fr" },
   stat: { flex: 1, padding: "28px 0 28px 64px", display: "flex", flexDirection: "column", gap: "6px" },
+  statMobile: { padding: "20px 16px", borderRight: "none", borderBottom: "1px solid rgba(255,255,255,0.06)" },
   statBorder: { borderRight: "1px solid rgba(255,255,255,0.06)" },
   statVal: { fontSize: "28px", fontWeight: 800, color: "#e8edf5", letterSpacing: "-0.02em", lineHeight: 1 },
   statLabel: { fontSize: "13px", color: "#4d5f75", lineHeight: 1.4 },
   previewSection: { position: "relative", zIndex: 1, maxWidth: "1600px", margin: "0 auto", padding: "56px 80px" },
+  previewSectionTablet: { padding: "36px 20px" },
   previewLabel: { fontSize: "11px", fontWeight: 500, color: "#4d5f75", letterSpacing: "0.08em", marginBottom: "14px", fontFamily: "'IBM Plex Mono', monospace" },
   section: { position: "relative", zIndex: 1, maxWidth: "1600px", margin: "0 auto", padding: "72px 80px" },
+  sectionTablet: { padding: "48px 20px" },
   sectionAlt: { position: "relative", zIndex: 1, background: "rgba(10,20,37,0.5)", borderTop: "1px solid rgba(255,255,255,0.05)", borderBottom: "1px solid rgba(255,255,255,0.05)", padding: "72px 0" },
+  sectionAltTablet: { padding: "48px 0" },
   sectionInner: { maxWidth: "1600px", margin: "0 auto", padding: "0 80px" },
+  sectionInnerTablet: { padding: "0 20px" },
   sectionEyebrow: { fontSize: "11px", fontWeight: 600, color: "#58a6ff", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "12px", display: "block", fontFamily: "'IBM Plex Mono', monospace" },
   sectionH2: { fontSize: "clamp(24px, 2.5vw, 36px)", fontWeight: 800, letterSpacing: "-0.025em", color: "#e8edf5", marginBottom: "12px" },
   sectionSub: { fontSize: "15px", color: "#8b9ab0", lineHeight: 1.65, maxWidth: "500px", marginBottom: "40px" },
   stepsRow: { display: "flex", alignItems: "stretch", marginTop: "40px", gap: "0" },
+  stepsRowMobile: { flexDirection: "column", gap: "0" },
   step: { background: "#0c1628", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "8px", padding: "28px 24px", textAlign: "center", flex: 1 },
   stepNum: { fontSize: "11px", fontWeight: 600, color: "#58a6ff", letterSpacing: "0.1em", marginBottom: "12px", fontFamily: "'IBM Plex Mono', monospace" },
   stepTitle: { fontSize: "14px", fontWeight: 600, color: "#e8edf5", marginBottom: "4px" },
   stepSub: { fontSize: "12px", color: "#4d5f75" },
   stepArrow: { padding: "0 16px", color: "#1e2d42", fontSize: "20px", display: "flex", alignItems: "center", flexShrink: 0 },
+  stepArrowMobile: { padding: "8px 0", justifyContent: "center", width: "100%" },
   featGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: "10px", overflow: "hidden" },
+  featGridTablet: { gridTemplateColumns: "repeat(2, 1fr)" },
+  featGridMobile: { gridTemplateColumns: "1fr" },
   featCard: { background: "#060d1a", padding: "28px 24px" },
   featTag: { fontSize: "10px", fontWeight: 600, color: "#58a6ff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "12px", fontFamily: "'IBM Plex Mono', monospace" },
   featTitle: { fontSize: "14px", fontWeight: 700, color: "#e8edf5", marginBottom: "8px" },
   featDesc: { fontSize: "13px", color: "#8b9ab0", lineHeight: 1.65 },
   ctaSection: { position: "relative", zIndex: 1, borderTop: "1px solid rgba(255,255,255,0.05)", padding: "64px 0" },
+  ctaSectionTablet: { padding: "40px 0" },
   ctaInner: { maxWidth: "1600px", margin: "0 auto", padding: "0 80px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "32px" },
+  ctaInnerTablet: { flexDirection: "column", alignItems: "flex-start", padding: "0 20px" },
   ctaH2: { fontSize: "clamp(20px, 2vw, 28px)", fontWeight: 800, letterSpacing: "-0.02em", color: "#e8edf5", marginBottom: "8px" },
   ctaSub: { fontSize: "14px", color: "#8b9ab0" },
   footer: { position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: "1600px", margin: "0 auto", padding: "20px 80px", borderTop: "1px solid rgba(255,255,255,0.04)" },
+  footerMobile: { flexDirection: "column", gap: "6px", padding: "20px", textAlign: "center" },
   footerText: { fontSize: "11px", color: "#2a3a50", fontFamily: "'IBM Plex Mono', monospace" },
 };

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import type { ReactElement } from "react";
+import { useIsMobile } from "../hooks/useMediaQuery";
 
 interface DashboardProps { token: string; }
 
@@ -97,7 +98,11 @@ export default function Dashboard({ token }: DashboardProps) {
   const [dragging, setDragging] = useState(false);
   const [history, setHistory] = useState<PastAnalysis[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
+
+  useEffect(() => { if (!isMobile) setShowMobileSidebar(false); }, [isMobile]);
 
   const authHeaders = { Authorization: `Bearer ${token}` };
 
@@ -169,8 +174,10 @@ export default function Dashboard({ token }: DashboardProps) {
     return "Threat summary";
   };
 
+  const selectView = (v: SidebarView) => { setView(v); setShowMobileSidebar(false); };
+
   return (
-    <div style={s.shell}>
+    <div style={{ ...s.shell, ...(isMobile ? s.shellMobile : {}) }}>
       <style>{`
         .sb-btn:hover:not(:disabled) { background: rgba(255,255,255,0.04) !important; color: #8b9ab0 !important; }
         .upload-zone:hover { border-color: rgba(56,139,255,0.45) !important; background: rgba(56,139,255,0.03) !important; }
@@ -179,8 +186,13 @@ export default function Dashboard({ token }: DashboardProps) {
         .ioc-row:hover { background: #0f1e35 !important; }
       `}</style>
 
+      {/* Mobile-only backdrop behind the slide-in sidebar */}
+      {isMobile && showMobileSidebar && (
+        <div style={s.sidebarBackdrop} onClick={() => setShowMobileSidebar(false)} />
+      )}
+
       {/* Sidebar */}
-      <aside style={s.sidebar}>
+      <aside style={{ ...s.sidebar, ...(isMobile ? s.sidebarMobile : {}), ...(isMobile && showMobileSidebar ? s.sidebarMobileOpen : {}) }}>
         <div style={s.sbSection}>Analysis</div>
         {NAV_ITEMS.map(item => (
           <button key={item.id} className="sb-btn"
@@ -190,7 +202,7 @@ export default function Dashboard({ token }: DashboardProps) {
               opacity: !hasResult && item.id !== "summary" ? 0.35 : 1,
               cursor: !hasResult && item.id !== "summary" ? "not-allowed" : "pointer",
             }}
-            onClick={() => (hasResult || item.id === "summary") && setView(item.id)}>
+            onClick={() => (hasResult || item.id === "summary") && selectView(item.id)}>
             {item.icon}{item.label}
           </button>
         ))}
@@ -198,7 +210,7 @@ export default function Dashboard({ token }: DashboardProps) {
         <div style={s.sbSection}>History</div>
         <button className="sb-btn"
           style={{ ...s.sbItem, ...(view === "history" ? s.sbItemActive : {}) }}
-          onClick={() => setView("history")}>
+          onClick={() => selectView("history")}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <rect x="2" y="2" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2" fill="none"/>
             <path d="M5 5h4M5 7h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
@@ -206,7 +218,7 @@ export default function Dashboard({ token }: DashboardProps) {
           Past analyses
         </button>
 
-        <button style={s.sbUpload} onClick={() => { setResult(null); setError(""); fileRef.current?.click(); }}>
+        <button style={s.sbUpload} onClick={() => { setResult(null); setError(""); setShowMobileSidebar(false); fileRef.current?.click(); }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M7 2v7M4 5l3-3 3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M2 11h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
@@ -217,10 +229,18 @@ export default function Dashboard({ token }: DashboardProps) {
 
       {/* Main */}
       <main style={s.main}>
+        {isMobile && (
+          <div style={s.mobileTopbar}>
+            <button style={s.mobileMenuBtn} onClick={() => setShowMobileSidebar(v => !v)} aria-label="Toggle sidebar">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 5h14M2 9h14M2 13h14" stroke="#e8edf5" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            </button>
+            <span style={s.mobileTopbarTitle}>{topbarTitle()}</span>
+          </div>
+        )}
         {(hasResult || view === "history") && (
-          <div style={s.topbar}>
+          <div style={{ ...s.topbar, ...(isMobile ? s.topbarMobile : {}) }}>
             <div>
-              <div style={s.topbarTitle}>{topbarTitle()}</div>
+              {!isMobile && <div style={s.topbarTitle}>{topbarTitle()}</div>}
               {result && view !== "history" && (
                 <div style={s.topbarMeta}>{result.filename} · {result.events_parsed.toLocaleString()} events · {result.analysis_time}s</div>
               )}
@@ -233,7 +253,7 @@ export default function Dashboard({ token }: DashboardProps) {
             )}
           </div>
         )}
-        <div style={s.mainBody}>{renderMain()}</div>
+        <div style={{ ...s.mainBody, ...(isMobile ? s.mainBodyMobile : {}) }}>{renderMain()}</div>
       </main>
 
       <input ref={fileRef} type="file" accept=".log,.txt" style={{ display: "none" }}
@@ -244,9 +264,10 @@ export default function Dashboard({ token }: DashboardProps) {
 
 /* ── Upload state ── */
 function UploadState({ dragging, setDragging, onDrop, fileRef, error }: any) {
+  const isMobile = useIsMobile();
   return (
-    <div style={uv.wrap}>
-      <div className="upload-zone" style={{ ...uv.zone, ...(dragging ? uv.zoneDrag : {}) }}
+    <div style={{ ...uv.wrap, ...(isMobile ? uv.wrapMobile : {}) }}>
+      <div className="upload-zone" style={{ ...uv.zone, ...(isMobile ? uv.zoneMobile : {}), ...(dragging ? uv.zoneDrag : {}) }}
         onDragOver={e => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
         onDrop={onDrop}
@@ -284,11 +305,12 @@ function LoadingState() {
 /* ── Summary / Overview view ── */
 function SummaryView({ result }: { result: AnalysisResult }) {
   const [filter, setFilter] = useState<string>("all");
+  const isMobile = useIsMobile();
   const filtered = filter === "all" ? result.findings : result.findings.filter(f => f.severity === filter);
 
   return (
     <div style={sv.wrap}>
-      <div style={sv.kpiRow}>
+      <div style={{ ...sv.kpiRow, ...(isMobile ? sv.kpiRowMobile : {}) }}>
         {[
           { n: result.critical_count, label: "Critical",        color: "#f85149" },
           { n: result.warning_count,  label: "Warnings",        color: "#e3b341" },
@@ -385,6 +407,7 @@ function TimelineView({ timeline }: { timeline: TimelineEvent[] }) {
 
 /* ── IOC view ── */
 function IOCView({ iocs }: { iocs: IOC[] }) {
+  const isMobile = useIsMobile();
   if (!iocs?.length) return <EmptyState message="No IOCs were extracted from this log." />;
 
   const grouped = iocs.reduce((acc, ioc) => {
@@ -403,7 +426,7 @@ function IOCView({ iocs }: { iocs: IOC[] }) {
         <div key={type} style={iv.group}>
           <div style={iv.groupLabel}>{type.toUpperCase()}</div>
           {items.map((ioc, i) => (
-            <div key={i} className="ioc-row" style={iv.row}>
+            <div key={i} className="ioc-row" style={{ ...iv.row, ...(isMobile ? iv.rowMobile : {}) }}>
               <div style={iv.value}>{ioc.value}</div>
               <div style={iv.context}>{ioc.context}</div>
             </div>
@@ -462,22 +485,33 @@ function EmptyState({ message }: { message: string }) {
 /* ── Styles ── */
 const s: Record<string, React.CSSProperties> = {
   shell: { display: "grid", gridTemplateColumns: "220px 1fr", position: "fixed", top: "58px", left: 0, right: 0, bottom: 0, background: "#060d1a", fontFamily: "'IBM Plex Sans', sans-serif", color: "#e8edf5", overflow: "hidden" },
+  shellMobile: { gridTemplateColumns: "1fr" },
   sidebar: { background: "#07101e", borderRight: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", overflow: "hidden" },
+  sidebarMobile: { position: "fixed", top: "58px", left: 0, bottom: 0, width: "78vw", maxWidth: "280px", zIndex: 150, transform: "translateX(-100%)", transition: "transform 0.2s ease", boxShadow: "4px 0 24px rgba(0,0,0,0.5)" },
+  sidebarMobileOpen: { transform: "translateX(0)" },
+  sidebarBackdrop: { position: "fixed", top: "58px", left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.55)", zIndex: 140 },
   sbSection: { fontSize: "10px", fontWeight: 600, color: "#2a3a50", letterSpacing: "0.1em", textTransform: "uppercase", padding: "16px 16px 6px", fontFamily: "'IBM Plex Mono', monospace", flexShrink: 0 },
   sbItem: { display: "flex", alignItems: "center", gap: "9px", fontSize: "13px", padding: "8px 14px", margin: "1px 8px", borderRadius: "5px", color: "#4d5f75", background: "none", border: "none", width: "calc(100% - 16px)", textAlign: "left", fontFamily: "'IBM Plex Sans', sans-serif", transition: "all 0.15s" },
   sbItemActive: { background: "rgba(56,139,255,0.1)", color: "#58a6ff", fontWeight: 500 },
   sbUpload: { margin: "auto 12px 16px", background: "#1a6ef5", color: "#fff", border: "none", borderRadius: "6px", padding: "10px", fontSize: "13px", fontWeight: 600, cursor: "pointer", fontFamily: "'IBM Plex Sans', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", flexShrink: 0 },
   main: { display: "flex", flexDirection: "column", overflow: "hidden", minHeight: 0 },
+  mobileTopbar: { display: "flex", alignItems: "center", gap: "12px", padding: "0 16px", height: "48px", borderBottom: "1px solid rgba(255,255,255,0.05)", flexShrink: 0 },
+  mobileMenuBtn: { background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", padding: "6px 8px", cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 },
+  mobileTopbarTitle: { fontSize: "13px", fontWeight: 600, color: "#e8edf5" },
   topbar: { padding: "0 28px", height: "52px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 },
+  topbarMobile: { padding: "0 16px", height: "auto", minHeight: "40px", flexWrap: "wrap", gap: "6px", paddingTop: "6px", paddingBottom: "6px" },
   topbarTitle: { fontSize: "14px", fontWeight: 600, color: "#e8edf5", marginBottom: "2px" },
   topbarMeta: { fontSize: "11px", color: "#4d5f75", fontFamily: "'IBM Plex Mono', monospace" },
   fileChip: { fontSize: "11px", color: "#58a6ff", background: "rgba(56,139,255,0.08)", border: "1px solid rgba(56,139,255,0.2)", padding: "3px 10px", borderRadius: "3px", fontFamily: "'IBM Plex Mono', monospace" },
   mainBody: { flex: 1, overflowY: "auto", overflowX: "hidden", padding: "24px 28px", minHeight: 0 },
+  mainBodyMobile: { padding: "16px" },
 };
 
 const uv: Record<string, React.CSSProperties> = {
   wrap: { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: "16px", padding: "48px" },
+  wrapMobile: { padding: "16px" },
   zone: { border: "1px dashed rgba(56,139,255,0.25)", borderRadius: "10px", padding: "48px 64px", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", cursor: "pointer", textAlign: "center", transition: "all 0.15s", width: "100%", maxWidth: "480px" },
+  zoneMobile: { padding: "32px 20px" },
   zoneDrag: { borderColor: "rgba(56,139,255,0.6)", background: "rgba(56,139,255,0.05)" },
   icon: { width: "52px", height: "52px", background: "rgba(56,139,255,0.08)", border: "1px solid rgba(56,139,255,0.2)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" },
   title: { fontSize: "16px", fontWeight: 600, color: "#e8edf5" },
@@ -494,6 +528,7 @@ const uv: Record<string, React.CSSProperties> = {
 const sv: Record<string, React.CSSProperties> = {
   wrap: { display: "flex", flexDirection: "column", gap: "16px" },
   kpiRow: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px" },
+  kpiRowMobile: { gridTemplateColumns: "repeat(2, 1fr)" },
   kpi: { background: "#0c1628", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "8px", padding: "16px 18px" },
   kpiN: { fontSize: "28px", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, marginBottom: "4px" },
   kpiL: { fontSize: "11px", color: "#4d5f75", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.05em" },
@@ -533,6 +568,7 @@ const iv: Record<string, React.CSSProperties> = {
   group: { display: "flex", flexDirection: "column", gap: "4px" },
   groupLabel: { fontSize: "10px", fontWeight: 600, color: "#58a6ff", letterSpacing: "0.12em", fontFamily: "'IBM Plex Mono', monospace", marginBottom: "6px", paddingBottom: "6px", borderBottom: "1px solid rgba(255,255,255,0.05)" },
   row: { display: "grid", gridTemplateColumns: "1fr 2fr", gap: "16px", padding: "10px 14px", background: "#0c1628", borderRadius: "6px", alignItems: "start", transition: "background 0.15s" },
+  rowMobile: { gridTemplateColumns: "1fr", gap: "4px" },
   value: { fontSize: "12px", color: "#e8edf5", fontFamily: "'IBM Plex Mono', monospace", wordBreak: "break-all" },
   context: { fontSize: "12px", color: "#8b9ab0", lineHeight: 1.5 },
 };
