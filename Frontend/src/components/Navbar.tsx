@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useIsMobile } from "../hooks/useMediaQuery";
 
 interface NavbarProps {
   token: string | null;
@@ -27,7 +28,9 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   const username = token ? getUsername(token) : "";
@@ -50,6 +53,11 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // Close mobile drawer if viewport grows past the mobile breakpoint
+  useEffect(() => {
+    if (!isMobile) setShowMobileMenu(false);
+  }, [isMobile]);
 
   const handleSubmit = async () => {
     if (!formUser || !formPass) { setError("All fields are required"); return; }
@@ -75,16 +83,22 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
     }
   };
 
-  const openModal = (m: AuthMode) => { setMode(m); setError(""); setShowModal(true); };
+  const openModal = (m: AuthMode) => { setMode(m); setError(""); setShowModal(true); setShowMobileMenu(false); };
 
   const handleLogout = () => {
     setShowDropdown(false);
+    setShowMobileMenu(false);
     onLogout();
+  };
+
+  const handleMobileNavigate = (p: string) => {
+    onNavigate(p);
+    setShowMobileMenu(false);
   };
 
   return (
     <>
-      <nav style={s.nav}>
+      <nav style={{ ...s.nav, ...(isMobile ? s.navMobile : {}) }}>
         <div style={s.navLeft}>
           <div style={s.logo} onClick={() => onNavigate("splash")}>
             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -93,10 +107,10 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
               <circle cx="11" cy="11" r="2.5" fill="#58a6ff"/>
             </svg>
             <span style={s.logoName}>LogSentinel</span>
-            <span style={s.logoBadge}>AI</span>
+            {!isMobile && <span style={s.logoBadge}>AI</span>}
           </div>
 
-          {token && (
+          {token && !isMobile && (
             <div style={s.navLinks}>
               <button
                 style={{ ...s.navLink, ...(currentPage === "splash" ? s.navLinkActive : {}) }}
@@ -115,7 +129,16 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
         </div>
 
         <div style={s.navRight}>
-          {token ? (
+          {isMobile ? (
+            // Mobile — single hamburger toggle for both auth and nav-link states
+            <button style={s.hamburgerBtn} onClick={() => setShowMobileMenu(v => !v)} aria-label="Toggle menu">
+              {showMobileMenu ? (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 5l10 10M15 5L5 15" stroke="#e8edf5" strokeWidth="1.6" strokeLinecap="round"/></svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="#e8edf5" strokeWidth="1.6" strokeLinecap="round"/></svg>
+              )}
+            </button>
+          ) : token ? (
             // Logged in — show avatar with dropdown
             <div ref={dropdownRef} style={{ position: "relative" }}>
               <button style={s.avatarBtn} onClick={() => setShowDropdown(v => !v)}>
@@ -151,10 +174,49 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
         </div>
       </nav>
 
+      {/* Mobile menu drawer */}
+      {isMobile && showMobileMenu && (
+        <div style={s.mobileMenu}>
+          {token ? (
+            <>
+              <button
+                style={{ ...s.mobileNavLink, ...(currentPage === "splash" ? s.navLinkActive : {}) }}
+                onClick={() => handleMobileNavigate("splash")}
+              >
+                Overview
+              </button>
+              <button
+                style={{ ...s.mobileNavLink, ...(currentPage === "dashboard" ? s.navLinkActive : {}) }}
+                onClick={() => handleMobileNavigate("dashboard")}
+              >
+                Dashboard
+              </button>
+              <div style={s.dropdownDivider} />
+              <div style={s.mobileUserRow}>
+                <div style={s.avatar}>{initials}</div>
+                <div>
+                  <div style={s.dropdownName}>{username}</div>
+                  <div style={s.dropdownRole}>SOC Analyst</div>
+                </div>
+              </div>
+              <button style={{ ...s.dropdownItem, ...s.dropdownItemDanger, padding: "10px 4px" }} onClick={handleLogout}>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2H2v9h3M9 9l3-3-3-3M12 6H5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <div style={s.mobileAuthBtns}>
+              <button style={{ ...s.btnGhost, width: "100%", padding: "10px 14px", textAlign: "center" }} onClick={() => openModal("login")}>Sign in</button>
+              <button style={{ ...s.btnPrimary, width: "100%", padding: "10px 14px", textAlign: "center" }} onClick={() => openModal("register")}>Get started free</button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Auth modal */}
       {showModal && (
         <div style={s.overlay} onClick={() => setShowModal(false)}>
-          <div style={s.modal} onClick={e => e.stopPropagation()}>
+          <div style={{ ...s.modal, ...(isMobile ? s.modalMobile : {}) }} onClick={e => e.stopPropagation()}>
             <div style={s.modalTop}>
               <div>
                 <div style={s.modalTitle}>{mode === "login" ? "Sign in to LogSentinel" : "Create your account"}</div>
@@ -200,7 +262,8 @@ export default function Navbar({ token, onAuthSuccess, onLogout, currentPage, on
 
 const s: Record<string, React.CSSProperties> = {
   nav: { display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", height: "58px", background: "rgba(6,13,26,0.96)", borderBottom: "1px solid rgba(255,255,255,0.07)", backdropFilter: "blur(12px)", position: "fixed", top: 0, left: 0, right: 0, zIndex: 100 },
-  navLeft: { display: "flex", alignItems: "center", gap: "32px" },
+  navMobile: { padding: "0 16px" },
+  navLeft: { display: "flex", alignItems: "center", gap: "32px", minWidth: 0 },
   logo: { display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", userSelect: "none" },
   logoName: { fontSize: "15px", fontWeight: 700, color: "#e8edf5", letterSpacing: "-0.01em" },
   logoBadge: { fontSize: "10px", fontWeight: 600, background: "rgba(56,139,255,0.15)", color: "#58a6ff", border: "1px solid rgba(56,139,255,0.3)", padding: "1px 6px", borderRadius: "4px", letterSpacing: "0.04em" },
@@ -227,8 +290,16 @@ const s: Record<string, React.CSSProperties> = {
   btnGhost: { background: "none", border: "1px solid rgba(255,255,255,0.12)", color: "#8b9ab0", fontSize: "13px", padding: "6px 14px", borderRadius: "6px", cursor: "pointer", fontFamily: "inherit" },
   btnPrimary: { background: "#1a6ef5", border: "none", color: "#fff", fontSize: "13px", fontWeight: 600, padding: "6px 14px", borderRadius: "6px", cursor: "pointer", fontFamily: "inherit" },
 
+  // Mobile hamburger + drawer
+  hamburgerBtn: { background: "none", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "6px", padding: "6px 8px", cursor: "pointer", display: "flex", alignItems: "center" },
+  mobileMenu: { position: "fixed", top: "58px", left: 0, right: 0, background: "#0c1628", borderBottom: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)", zIndex: 99, padding: "12px 16px 16px", display: "flex", flexDirection: "column", gap: "4px" },
+  mobileNavLink: { background: "none", border: "none", color: "#8b9ab0", fontSize: "15px", padding: "12px 4px", borderRadius: "6px", cursor: "pointer", fontFamily: "inherit", textAlign: "left", width: "100%" },
+  mobileUserRow: { display: "flex", alignItems: "center", gap: "10px", padding: "8px 4px 4px" },
+  mobileAuthBtns: { display: "flex", flexDirection: "column", gap: "8px", paddingTop: "4px" },
+
   overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, backdropFilter: "blur(4px)" },
   modal: { background: "#0c1628", border: "1px solid rgba(56,139,255,0.15)", borderRadius: "12px", padding: "28px", width: "400px", boxShadow: "0 8px 40px rgba(0,0,0,0.7)" },
+  modalMobile: { width: "calc(100vw - 32px)", padding: "22px 18px" },
   modalTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" },
   modalTitle: { fontSize: "17px", fontWeight: 700, color: "#e8edf5", marginBottom: "4px" },
   modalSub: { fontSize: "13px", color: "#8b9ab0" },
